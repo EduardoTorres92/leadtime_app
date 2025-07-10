@@ -447,8 +447,24 @@ def main():
             color='Marca',
             color_discrete_map=cores_marca
         )
-        fig_geral.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-        fig_geral.update_layout(showlegend=False, height=500)
+        fig_geral.update_traces(texttemplate='%{text:.2f}', textposition='outside', textfont_size=14)
+        fig_geral.update_layout(
+            showlegend=False, 
+            height=500,
+            bargap=0.3,  # Reduz o espaçamento entre barras (0.0 = sem espaço, 1.0 = muito espaço)
+            bargroupgap=0.1,  # Espaçamento entre grupos de barras
+            xaxis=dict(
+                tickfont=dict(size=12),
+                titlefont=dict(size=14)
+            ),
+            yaxis=dict(
+                tickfont=dict(size=12),
+                titlefont=dict(size=14)
+            ),
+            title_font_size=16,
+            font=dict(size=12),
+            margin=dict(l=50, r=50, t=80, b=50)
+        )
         st.plotly_chart(fig_geral, use_container_width=True)
     
     # Gráfico temporal
@@ -528,7 +544,23 @@ def main():
         color='Marca',
         color_discrete_map=cores_marca
     )
-    fig_boxplot.update_layout(showlegend=False, height=500)
+    fig_boxplot.update_layout(
+        showlegend=False, 
+        height=500,
+        boxgap=0.3,  # Espaçamento entre boxplots
+        boxgroupgap=0.1,  # Espaçamento entre grupos de boxplots
+        xaxis=dict(
+            tickfont=dict(size=12),
+            titlefont=dict(size=14)
+        ),
+        yaxis=dict(
+            tickfont=dict(size=12),
+            titlefont=dict(size=14)
+        ),
+        title_font_size=16,
+        font=dict(size=12),
+        margin=dict(l=50, r=50, t=80, b=50)
+    )
     st.plotly_chart(fig_boxplot, use_container_width=True)
     
     # Análise por canal
@@ -548,8 +580,24 @@ def main():
             color='Canal_Agrupado',
             color_discrete_map=cores_canal
         )
-        fig_canal.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-        fig_canal.update_layout(showlegend=False, height=400)
+        fig_canal.update_traces(texttemplate='%{text:.2f}', textposition='outside', textfont_size=14)
+        fig_canal.update_layout(
+            showlegend=False, 
+            height=400,
+            bargap=0.3,  # Reduz o espaçamento entre barras
+            bargroupgap=0.1,  # Espaçamento entre grupos de barras
+            xaxis=dict(
+                tickfont=dict(size=12),
+                titlefont=dict(size=14)
+            ),
+            yaxis=dict(
+                tickfont=dict(size=12),
+                titlefont=dict(size=14)
+            ),
+            title_font_size=16,
+            font=dict(size=12),
+            margin=dict(l=50, r=50, t=80, b=50)
+        )
         st.plotly_chart(fig_canal, use_container_width=True)
     
     # Tabelas de dados

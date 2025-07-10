@@ -16,6 +16,10 @@
 - **Problema**: Chave OpenAI hardcoded no código
 - **Solução**: Configuração segura usando `st.secrets`
 
+### 4. ✅ Espaçamento dos Gráficos
+- **Problema**: Barras muito espaçadas no Streamlit Cloud
+- **Solução**: Ajustado `bargap=0.3` e `boxgap=0.3` nos gráficos Plotly
+
 ## Arquivos Modificados
 
 ### 📁 `.streamlit/config.toml`
