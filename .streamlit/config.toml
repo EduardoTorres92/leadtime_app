@@ -1,0 +1,30 @@
+[global]
+# Configuração geral do Streamlit
+dataFrameSerialization = "legacy"
+
+[server]
+# Configurações do servidor
+headless = true
+port = 8501
+enableCORS = false
+enableXsrfProtection = true
+
+[browser]
+# Configurações do navegador
+gatherUsageStats = false
+serverAddress = "0.0.0.0"
+serverPort = 8501
+
+[theme]
+# Tema da aplicação
+primaryColor = "#FF6B6B"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F0F2F6"
+textColor = "#262730"
+font = "sans serif"
+
+[client]
+# Configurações do cliente
+caching = true
+displayEnabled = true
+showErrorDetails = false 
