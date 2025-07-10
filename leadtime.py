@@ -5,9 +5,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import warnings
-import openai
-import json
-import hashlib
 import io
 warnings.filterwarnings('ignore')
 
@@ -18,100 +15,28 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🔐 Sistema de Login
-def hash_password(password):
-    """Hash da senha usando SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+# 🔵 Cores por marca padronizadas
+cores_marca = {
+    "PAPAIZ": "blue",
+    "LA FONTE": "darkred",
+    "SILVANA CD SP": "orange",
+    "YALE": "yellow",
+    "VAULT": "gray",
+    "Total": "darkgreen",
+}
 
-def verificar_credenciais(usuario, senha):
-    """Verifica se as credenciais são válidas"""
-    usuarios_validos = {
-        "admin": hash_password("admin123"),
-        "leadtime": hash_password("leadtime2024"),
-        "assa": hash_password("assa@2024"),
-        "manager": hash_password("manager@123")
-    }
-    
-    senha_hash = hash_password(senha)
-    return usuario in usuarios_validos and usuarios_validos[usuario] == senha_hash
-
-def interface_login():
-    """Interface de login"""
-    st.markdown("""
-    <div style="max-width: 400px; margin: 0 auto; padding: 2rem; border: 1px solid #ddd; border-radius: 10px; margin-top: 5rem;">
-        <h2 style="text-align: center; color: #333;">🔐 Login - Dashboard Lead Time</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([1, 2, 1])
-    
-    with col2:
-        st.markdown("### Acesso Restrito")
-        st.markdown("Digite suas credenciais para acessar o dashboard:")
-        
-        with st.form("login_form"):
-            usuario = st.text_input("👤 Usuário", placeholder="Digite seu usuário")
-            senha = st.text_input("🔒 Senha", type="password", placeholder="Digite sua senha")
-            
-            col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1])
-            with col_btn2:
-                submit_button = st.form_submit_button("🚀 Entrar", type="primary", use_container_width=True)
-            
-            if submit_button:
-                if usuario and senha:
-                    if verificar_credenciais(usuario, senha):
-                        st.session_state.logged_in = True
-                        st.session_state.username = usuario
-                        st.session_state.login_time = datetime.now()
-                        st.success("✅ Login realizado com sucesso!")
-                        st.rerun()
-                    else:
-                        st.error("❌ Usuário ou senha incorretos!")
-                else:
-                    st.warning("⚠️ Por favor, preencha todos os campos!")
-        
-
-
-def logout():
-    """Função para fazer logout"""
-    st.session_state.logged_in = False
-    st.session_state.username = None
-    st.session_state.login_time = None
-    if 'uploaded_data' in st.session_state:
-        del st.session_state.uploaded_data
-    st.rerun()
-
-def header_com_logout():
-    """Cabeçalho com informações do usuário e botão de logout"""
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        st.title('📊 Dashboard Lead Time por Marca')
-        if st.session_state.get('username'):
-            tempo_logado = datetime.now() - st.session_state.login_time
-            horas = int(tempo_logado.total_seconds() // 3600)
-            minutos = int((tempo_logado.total_seconds() % 3600) // 60)
-            st.markdown(f"*Usuário: **{st.session_state.username}** | Sessão: {horas}h {minutos}min*")
-    
-    with col2:
-        st.markdown("")
-        st.markdown("")
-        if st.button("🚪 Logout", type="secondary", use_container_width=True):
-            logout()
-
-def verificar_sessao():
-    """Verifica se o usuário está logado"""
-    if 'logged_in' not in st.session_state:
-        st.session_state.logged_in = False
-    
-    if not st.session_state.logged_in:
-        interface_login()
-        return False
-    
-    return True
+# 🟡 Cores por canal de venda
+cores_canal = {
+    "WEBSHOP": "#1f77b4",
+    "HOME CENTER": "#ff7f0e",
+    "DEMAIS CANAIS": "#2ca02c"
+}
 
 def interface_upload():
     """Interface para upload do arquivo CSV"""
+    st.title('📊 Dashboard Lead Time por Marca')
+    st.markdown("---")
+    
     st.markdown("### 📁 Upload do Arquivo de Dados")
     
     col1, col2 = st.columns([2, 1])
@@ -278,43 +203,8 @@ def carregar_dados(uploaded_file=None):
     except Exception as e:
         return pd.DataFrame(), f"❌ Erro ao processar arquivo: {str(e)}"
 
-# 🔵 Cores por marca padronizadas
-cores_marca = {
-    "PAPAIZ": "blue",
-    "LA FONTE": "darkred",
-    "SILVANA CD SP": "orange",
-    "YALE": "yellow",
-    "VAULT": "gray",
-    "Total": "darkgreen",
-}
-
-# 🟡 Cores por canal de venda
-cores_canal = {
-    "WEBSHOP": "#1f77b4",
-    "HOME CENTER": "#ff7f0e",
-    "DEMAIS CANAIS": "#2ca02c"
-}
-
-# 🤖 Configuração do Agente de IA
-# Configuração segura do OpenAI usando secrets do Streamlit
-try:
-    if hasattr(st, 'secrets') and 'openai' in st.secrets:
-        openai.api_key = st.secrets['openai']['api_key']
-    else:
-        # Fallback para desenvolvimento local
-        openai.api_key = "sk-..."  # Substitua pela sua chave se necessário
-except Exception as e:
-    st.warning("⚠️ Chave OpenAI não configurada. Algumas funcionalidades podem não funcionar.")
-    openai.api_key = None
-
 # MAIN APP
 def main():
-    if not verificar_sessao():
-        return
-
-    header_com_logout()
-    st.markdown("---")
-    
     # Interface de upload
     uploaded_file = interface_upload()
     
@@ -447,24 +337,8 @@ def main():
             color='Marca',
             color_discrete_map=cores_marca
         )
-        fig_geral.update_traces(texttemplate='%{text:.2f}', textposition='outside', textfont_size=14)
-        fig_geral.update_layout(
-            showlegend=False, 
-            height=500,
-            bargap=0.3,  # Reduz o espaçamento entre barras (0.0 = sem espaço, 1.0 = muito espaço)
-            bargroupgap=0.1,  # Espaçamento entre grupos de barras
-            xaxis=dict(
-                tickfont=dict(size=12),
-                titlefont=dict(size=14)
-            ),
-            yaxis=dict(
-                tickfont=dict(size=12),
-                titlefont=dict(size=14)
-            ),
-            title_font_size=16,
-            font=dict(size=12),
-            margin=dict(l=50, r=50, t=80, b=50)
-        )
+        fig_geral.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig_geral.update_layout(showlegend=False, height=500)
         st.plotly_chart(fig_geral, use_container_width=True)
     
     # Gráfico temporal
@@ -544,23 +418,7 @@ def main():
         color='Marca',
         color_discrete_map=cores_marca
     )
-    fig_boxplot.update_layout(
-        showlegend=False, 
-        height=500,
-        boxgap=0.3,  # Espaçamento entre boxplots
-        boxgroupgap=0.1,  # Espaçamento entre grupos de boxplots
-        xaxis=dict(
-            tickfont=dict(size=12),
-            titlefont=dict(size=14)
-        ),
-        yaxis=dict(
-            tickfont=dict(size=12),
-            titlefont=dict(size=14)
-        ),
-        title_font_size=16,
-        font=dict(size=12),
-        margin=dict(l=50, r=50, t=80, b=50)
-    )
+    fig_boxplot.update_layout(showlegend=False, height=500)
     st.plotly_chart(fig_boxplot, use_container_width=True)
     
     # Análise por canal
@@ -580,24 +438,8 @@ def main():
             color='Canal_Agrupado',
             color_discrete_map=cores_canal
         )
-        fig_canal.update_traces(texttemplate='%{text:.2f}', textposition='outside', textfont_size=14)
-        fig_canal.update_layout(
-            showlegend=False, 
-            height=400,
-            bargap=0.3,  # Reduz o espaçamento entre barras
-            bargroupgap=0.1,  # Espaçamento entre grupos de barras
-            xaxis=dict(
-                tickfont=dict(size=12),
-                titlefont=dict(size=14)
-            ),
-            yaxis=dict(
-                tickfont=dict(size=12),
-                titlefont=dict(size=14)
-            ),
-            title_font_size=16,
-            font=dict(size=12),
-            margin=dict(l=50, r=50, t=80, b=50)
-        )
+        fig_canal.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig_canal.update_layout(showlegend=False, height=400)
         st.plotly_chart(fig_canal, use_container_width=True)
     
     # Tabelas de dados
