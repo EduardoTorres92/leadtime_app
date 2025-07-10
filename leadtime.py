@@ -70,14 +70,7 @@ def interface_login():
                 else:
                     st.warning("⚠️ Por favor, preencha todos os campos!")
         
-        with st.expander("ℹ️ Usuários de Teste"):
-            st.markdown("""
-            **Usuários disponíveis:**
-            - `admin` / `admin123`
-            - `leadtime` / `leadtime2024`
-            - `assa` / `assa@2024`
-            - `manager` / `manager@123`
-            """)
+
 
 def logout():
     """Função para fazer logout"""
