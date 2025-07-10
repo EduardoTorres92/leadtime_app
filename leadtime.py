@@ -303,7 +303,16 @@ cores_canal = {
 }
 
 # 🤖 Configuração do Agente de IA
-openai.api_key = "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"
+# Configuração segura do OpenAI usando secrets do Streamlit
+try:
+    if hasattr(st, 'secrets') and 'openai' in st.secrets:
+        openai.api_key = st.secrets['openai']['api_key']
+    else:
+        # Fallback para desenvolvimento local
+        openai.api_key = "sk-..."  # Substitua pela sua chave se necessário
+except Exception as e:
+    st.warning("⚠️ Chave OpenAI não configurada. Algumas funcionalidades podem não funcionar.")
+    openai.api_key = None
 
 # MAIN APP
 def main():

@@ -1,6 +1,5 @@
 [global]
 # Configuração geral do Streamlit
-dataFrameSerialization = "legacy"
 
 [server]
 # Configurações do servidor
